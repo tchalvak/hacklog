@@ -1,0 +1,1 @@
+(load "tutorial/hacklog") (in-ns 'tutorial.hacklog) (stop-app) (start-app)

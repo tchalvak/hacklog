@@ -1,4 +1,4 @@
-(ns tutorial.template3
+(ns threadhack.hacklog
   (:require [net.cgrand.enlive-html :as html])
   (:use tutorial.utils)
   (:use [clojure.contrib.duck-streams :only [pwd]])
@@ -8,21 +8,24 @@
 ;; Top Level Defs
 ;; =============================================================================
 
-(def *webdir* (str (pwd) "/src/tutorial/"))
+(def *webdir* (str (pwd) "/src/"))
 ; Assign the web directory.
 
 ;; =============================================================================
 ;; The Templates Ma!
 ;; =============================================================================
 
-(html/deftemplate base "tutorial/base.html"
+
+(html/deftemplate hack-base "index.html"
   [{:keys [title header main footer]}]
   [:#title]  (maybe-content title)
   [:#header] (maybe-substitute header)
   [:#main]   (maybe-substitute main)
   [:#footer] (maybe-substitute footer))
 
-; Create the base page, which accepts a hash with title/header/main/footer.
+; Hack blog index stuff, accepts a hash with title/header/main/footer.
+
+(comment
 
 (html/defsnippet three-col "tutorial/3col.html" [:div#main]
   [{:keys [left middle right]}]
@@ -56,12 +59,22 @@
            :main (three-col {:left  navl
                              :right navr})})))
 
-(defn index
+(defn tut-base
   ([] (base {}))
   ([ctxt] (base ctxt)))
 
 ; Create the base page, which accepts a hash with title/header/main/footer.
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+End of comment block)
+
+
+(defn hacklog
+  ([] (hack-base {}))
+  ([ctxt] (hack-base ctxt)))
+; ctxt is just a hash of substitution possibilities
 
 ;; =============================================================================
 ;; Routes
@@ -70,7 +83,20 @@
 (defroutes app-routes
   ;; app routes
   (GET "/"
-       (render (index {:title "Fuckin' succeedzes"})))
+       (render (hacklog {:title "RoyRonalds.com"})))
+  (GET "/blog"
+       (render (hacklog {:title "RoyRonalds.com: Blog"})))
+  (GET "/blog/"
+       (render (hacklog {:title "RoyRonalds.com: Blog"})))
+  (GET "*/main.css"
+       (serve-file *webdir* "main.css"))
+
+  (ANY "*"
+       [404 "Page Not Found"]))
+
+
+(comment
+
   (GET "/a/"
        (render (viewa params session)))
   (GET "/b/"
@@ -87,11 +113,9 @@
        (serve-file *webdir* "3col.html"))
   (GET "/navs.html"
        (serve-file *webdir* "navs.html"))
-  (GET "*/main.css"
-       (serve-file *webdir* "main.css"))
 
-  (ANY "*"
-       [404 "Page Not Found"]))
+End of comments section
+)
 
 ;; =============================================================================
 ;; The App

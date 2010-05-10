@@ -1,4 +1,4 @@
-(ns tutorial.template3
+(ns tutorial.hacklog
   (:require [net.cgrand.enlive-html :as html])
   (:use tutorial.utils)
   (:use [clojure.contrib.duck-streams :only [pwd]])
@@ -14,6 +14,16 @@
 ;; =============================================================================
 ;; The Templates Ma!
 ;; =============================================================================
+
+
+(html/deftemplate hack-base "tutorial/index.html"
+  [{:keys [title header main footer]}]
+  [:#title]  (maybe-content title)
+  [:#header] (maybe-substitute header)
+  [:#main]   (maybe-substitute main)
+  [:#footer] (maybe-substitute footer))
+
+; Hack blog index stuff, accepts a hash with title/header/main/footer.
 
 (html/deftemplate base "tutorial/base.html"
   [{:keys [title header main footer]}]
@@ -56,12 +66,17 @@
            :main (three-col {:left  navl
                              :right navr})})))
 
-(defn index
+(defn tut-base
   ([] (base {}))
   ([ctxt] (base ctxt)))
 
 ; Create the base page, which accepts a hash with title/header/main/footer.
 
+
+(defn hacklog
+  ([] (hack-base {}))
+  ([ctxt] (hack-base ctxt)))
+; ctxt is just a hash of substitution possibilities
 
 ;; =============================================================================
 ;; Routes
@@ -70,7 +85,11 @@
 (defroutes app-routes
   ;; app routes
   (GET "/"
-       (render (index {:title "Fuckin' succeedzes"})))
+       (render (hacklog {:title "RoyRonalds.com"})))
+  (GET "/blog"
+       (render (hacklog {:title "RoyRonalds.com: Blog"})))
+  (GET "/blog/"
+       (render (hacklog {:title "RoyRonalds.com: Blog"})))
   (GET "/a/"
        (render (viewa params session)))
   (GET "/b/"
